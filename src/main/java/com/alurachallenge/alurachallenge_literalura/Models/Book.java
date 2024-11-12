@@ -32,17 +32,21 @@ public class Book {
         this.authors = bookData.authors().stream()
                 .map(Author::new)
                 .collect(Collectors.toList());
-        this.language = Language.fromCode(bookData.languages().split(",")[0].trim());
+        this.language = bookData.languages().isEmpty() ? null : Language.fromCode(bookData.languages().get(0));
         this.download_count = bookData.download_count();
     }
 
     @Override
     public String toString() {
+        String authorNames = authors.stream()
+                .map(Author::getName)
+                .collect(Collectors.joining(", "));
+
         return "------------|LIBRO|------------\n" +
-                "Titulo: " + title +
-                "Idioma(s): " + language +
-                "Número de descargas:" + download_count +
-                "Autores: " + authors +
+                "Titulo: " + title + "\n" +
+                "Idioma(s): " + language  + "\n" +
+                "Número de descargas:" + download_count +  "\n" +
+                "Autores: " + authorNames + "\n" +
                 "------------------------------";
     }
 
