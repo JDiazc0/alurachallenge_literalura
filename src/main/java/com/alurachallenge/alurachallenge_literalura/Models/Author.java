@@ -4,6 +4,7 @@ import com.alurachallenge.alurachallenge_literalura.Resouerces.AuthorData;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "authors")
@@ -27,11 +28,15 @@ public class Author {
 
     @Override
     public String toString() {
+        String bookTitles = books.stream()
+                .map(Book::getTitle)
+                .collect(Collectors.joining(", "));
+
         return "------------|AUTOR|------------\n" +
-                "Nombre: " + name +
-                "Año de nacimiento: " + birth_year +
-                "Año de defunción: " + death_year +
-                "Libros: "+ books +
+                "Nombre: " + name + "\n" +
+                "Año de nacimiento: " + birth_year + "\n" +
+                "Año de defunción: " + death_year + "\n" +
+                "Libros: "+ books + "\n" +
                 "------------------------------"
                 ;
     }
