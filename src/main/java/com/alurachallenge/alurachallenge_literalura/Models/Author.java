@@ -1,9 +1,11 @@
 package com.alurachallenge.alurachallenge_literalura.Models;
 
-import com.alurachallenge.alurachallenge_literalura.Resouerces.AuthorData;
+import com.alurachallenge.alurachallenge_literalura.Resouerces.AuthorDTO;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -12,18 +14,19 @@ public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(unique = true)
     private String name;
     private Integer birth_year;
     private Integer death_year;
-    @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Book> books;
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
+    private Set<Book> books = new HashSet<>();
 
     public Author(){}
 
-    public Author(AuthorData authorData){
-        this.name = authorData.name();
-        this.birth_year = authorData.birth_year();
-        this.death_year = authorData.death_year();
+    public Author(AuthorDTO authorDTO){
+        this.name = authorDTO.name();
+        this.birth_year = authorDTO.birth_year();
+        this.death_year = authorDTO.death_year();
     }
 
     @Override
@@ -32,12 +35,12 @@ public class Author {
                 .map(Book::getTitle)
                 .collect(Collectors.joining(", "));
 
-        return "------------|AUTOR|------------\n" +
+        return "\n|------------|AUTOR|------------|\n" +
                 "Nombre: " + name + "\n" +
                 "Año de nacimiento: " + birth_year + "\n" +
                 "Año de defunción: " + death_year + "\n" +
-                "Libros: "+ books + "\n" +
-                "------------------------------"
+                "Libros: "+ bookTitles + "\n" +
+                "|-------------------------------|\n"
                 ;
     }
 
@@ -73,12 +76,19 @@ public class Author {
         this.death_year = death_year;
     }
 
-    public List<Book> getBooks() {
+    public Set<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
-        books.forEach(b->b.getAuthors().add(this));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Author author)) return false;
+        return name != null && name.equals(author.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 }
